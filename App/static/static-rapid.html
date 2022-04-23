@@ -35,24 +35,19 @@
             </p>
         </div>
         <div class="row">
-            <table>
-                <thead>
-                  <tr>
-                    <th>Random Word</th></hr>
-                  </tr>
-                </thead>
-                <li id="result" class="r">
-                
-                </li>
-            </table>
+            
         </div>
-      <h1>Speech synthesiser</h1>
+      <h1>Rapid Word Spelling B!</h1>
 
-    <p>Enter some text in the input below and press return  or the "play" button to hear it. change voices using the dropdown menu.</p>
+    <p> You have one minute to spell as many words as possible in 1 minute! Press the "Go!" button to start the timer and begin the Spelling B. Click the "Play Word" button to hear the word that needs to be spelt. Listen carefully and wait until the voice is finished speaking to enter the word. When you think you've spelt the word correctly press enter or click the "Submit" button until time runs out.</p>
     
     <label id ="score">Score:0</label><br>
     <input type="hidden" id="hide" name="custId" value="" class="hidden">
       <form>
+
+        <p>You have: <span id="timer">0</span> seconds remaining!</p>
+        
+        
       <input type="text" class="txt" id="word">
       <div>
         <label for="rate">Rate</label><input type="range" min="0.5" max="2" value="1" step="0.1" id="rate">
@@ -65,11 +60,14 @@
         <div class="clearfix"></div>
       </div>
       <select>
-  
+        
       </select>
       <div class="controls">
-        <button id="play" class="play" type="submit">Play Word</button>
+
+        <button id="play" class="play" type= "button">Play Word</button>
       <button id="submit" class="submit" type="submit">Submit</button>
+      <button type = "button" id = "goButton" onclick="printDuration()">Go!</button>
+      
   
       </div>
       </form>
@@ -128,6 +126,13 @@ var score = 0;
 var currentWord= '';
 var wrong = 0;
 
+// timer variables
+var isWaiting = false;
+var isRunning = false;
+var seconds = 60;
+var countdownTimer;
+var finalCountdown = false;
+
 function populateVoiceList() {
   voices = synth.getVoices().sort(function (a, b) {
       const aname = a.name.toUpperCase(), bname = b.name.toUpperCase();
@@ -139,7 +144,7 @@ function populateVoiceList() {
   voiceSelect.innerHTML = '';
   for(i = 0; i < voices.length ; i++) {
   
-  if(voices[i].name == "Microsoft Sonia Online (Natural) - English (United Kingdom)"){
+  //if(voices[i].name == "Microsoft Sonia Online (Natural) - English (United Kingdom)"){
     var option = document.createElement('option');
     option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
 	  //let z = voices[i];
@@ -152,7 +157,7 @@ function populateVoiceList() {
     option.setAttribute('data-lang', voices[i].lang);
     option.setAttribute('data-name', voices[i].name);
     voiceSelect.appendChild(option);
-  }
+//}
 	voiceSelect.selectedIndex = selectedIndex;
 	
 	
@@ -162,9 +167,6 @@ function populateVoiceList() {
   voiceSelect.selectedIndex = selectedIndex;
 }
 
-function isObject(val) {
-    return val instanceof Object; 
-}
 
 populateVoiceList();
 if (speechSynthesis.onvoiceschanged !== undefined) {
@@ -223,6 +225,7 @@ inputForm.onclick = function(event) {
   inputTxt.blur();
 }
 
+let scoreDisplay = document.querySelector('#score');
 submmitWord.onclick = function(event) {
   event.preventDefault();
   var scoreString = '';//String used to concatinate and display to label element
@@ -233,6 +236,7 @@ submmitWord.onclick = function(event) {
   var empty = '';
   
   suppliedAnswer += inputWord.value;
+  suppliedAnswer = suppliedAnswer.toLowerCase();
   console.log('The suppliedAnswer is '+ suppliedAnswer);
 
   
@@ -242,7 +246,7 @@ submmitWord.onclick = function(event) {
   if(answer == true){
 	score = score+1;
 	scoreString += 'Score: ' + score;
-	let scoreDisplay = document.querySelector('#score');
+	
   inputW.value = empty;
 	
 	
@@ -251,6 +255,14 @@ submmitWord.onclick = function(event) {
 	
   }else if(answer == false){
     wrong = wrong + 1;
+    inputW.value = empty;
+    
+    if(wrong == 3){
+      stop();
+      hideButton();
+      wrong = 0;
+      
+    }
     
   }
   
@@ -258,6 +270,14 @@ submmitWord.onclick = function(event) {
   console.log("The score is : "+score);
 }
 
+function hideButton() {
+  var y = document.getElementById("goButton");
+  if (y.style.display === "none") {
+    y.style.display = "block";
+  } else {
+    y.style.display = "none";
+  }
+}
 pitch.onchange = function() {
   pitchValue.textContent = pitch.value;
 }
@@ -270,6 +290,42 @@ voiceSelect.onchange = function(){
   speak();
 }
 
+var check = null;
+var cnt = 60;
+
+
+        function printDuration() {
+            speak();
+            score = 0;
+            cnt =60;
+            event.preventDefault();
+            scoreDisplay.innerHTML ="Score:"+ score;
+            hideButton();
+            if (check == null) {
+                
+
+                check = setInterval(function () {
+                    cnt -= 1;
+                    document.getElementById("timer").innerHTML = cnt;
+                    if(cnt == 0){
+                      stop();
+                      hideButton();
+                      
+                    }
+                }, 1000);
+
+                
+            }
+
+            
+
+        }
+
+        function stop() {
+            clearInterval(check);
+            check = null;
+            document.getElementById("timer").innerHTML = '0';
+        }
 
     </script>
   </body>

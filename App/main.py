@@ -1,14 +1,18 @@
 import os
 from flask import Flask
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, login_user
 from flask_uploads import DOCUMENTS, IMAGES, TEXT, UploadSet, configure_uploads
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
 from datetime import timedelta
+from App.models import User
+#from forms import SignUp
 
 
 from App.database import create_db, get_migrate
+
+lm = LoginManager()
 
 from App.controllers import (
     setup_jwt
@@ -16,13 +20,16 @@ from App.controllers import (
 
 from App.views import (
     user_views,
-    api_views
+    api_views,
+    form_views
 )
 
 views = [
     user_views,
-    api_views
+    api_views,
+    form_views
 ]
+
 
 def add_views(app, views):
     for view in views:
@@ -58,12 +65,18 @@ def create_app(config={}):
     app.app_context().push()
     return app
 
-
-
 app = create_app()
 migrate = get_migrate(app)
 
-#@app.route('/randomword')
-#def getRandomWord():
-    
+lm.init_app(app)
+lm.login_view = 'login'
+
+@lm.user_loader
+def user_loader(user_id):
+    """Given *user_id*, return the associated User object.
+
+    :param unicode user_id: user_id (email) user to retrieve
+
+    """
+    return User.query.get(user_id)
 

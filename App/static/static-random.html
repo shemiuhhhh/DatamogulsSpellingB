@@ -35,20 +35,11 @@
             </p>
         </div>
         <div class="row">
-            <table>
-                <thead>
-                  <tr>
-                    <th>Random Word</th></hr>
-                  </tr>
-                </thead>
-                <li id="result" class="r">
-                
-                </li>
-            </table>
+           
         </div>
-      <h1>Speech synthesiser</h1>
+      <h1>Spelling B Unlimited!</h1>
 
-    <p>Enter some text in the input below and press return  or the "play" button to hear it. change voices using the dropdown menu.</p>
+    <p>Click the "Play Word" button to hear the word that needs to be spelt. Listen carefully and wait until the voice is finished speaking to enter the word. When you think you've spelt the word correctly press enter or click the "Submit" button. The rate and pitch can be adjusted as desired to enhance your experience.</p>
     
     <label id ="score">Score:0</label><br>
     <input type="hidden" id="hide" name="custId" value="" class="hidden">
@@ -68,8 +59,8 @@
   
       </select>
       <div class="controls">
-        <button id="play" class="play" type="submit">Play Word</button>
-      <button id="submit" class="submit" type="submit">Submit</button>
+        <button id="play" class="play" type= "button">Play Word</button>
+        <button id="submit" class="submit" type="submit">Submit</button>
   
       </div>
       </form>
@@ -139,7 +130,7 @@ function populateVoiceList() {
   voiceSelect.innerHTML = '';
   for(i = 0; i < voices.length ; i++) {
   
-  if(voices[i].name == "Microsoft Sonia Online (Natural) - English (United Kingdom)"){
+  //if(voices[i].name == "Microsoft Sonia Online (Natural) - English (United Kingdom)"){
     var option = document.createElement('option');
     option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
 	  //let z = voices[i];
@@ -152,7 +143,7 @@ function populateVoiceList() {
     option.setAttribute('data-lang', voices[i].lang);
     option.setAttribute('data-name', voices[i].name);
     voiceSelect.appendChild(option);
-  }
+  //}
 	voiceSelect.selectedIndex = selectedIndex;
 	
 	
@@ -233,6 +224,7 @@ submmitWord.onclick = function(event) {
   var empty = '';
   
   suppliedAnswer += inputWord.value;
+  suppliedAnswer = suppliedAnswer.toLowerCase();
   console.log('The suppliedAnswer is '+ suppliedAnswer);
 
   
@@ -251,7 +243,7 @@ submmitWord.onclick = function(event) {
 	
   }else if(answer == false){
     wrong = wrong + 1;
-    
+    inputW.value = empty;
   }
   
   responseCount += 1;
